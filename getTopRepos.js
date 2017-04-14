@@ -4,18 +4,23 @@ const gh = require('./GithubRequest');
 const fw = require('./FileWriter');
 
 /**
-Get the Top Repositories sorted by:
+Run main function
+*/
+getTop();
+
+/**
+Script to get the Top Repositories sorted by:
 @param sortBy | one of 'forks', 'stars', 'updated'
 
 See https://developer.github.com/v3/search/ for more API options
 */
 function getTop() {
 	const sortBy = 'forks';
-	const numPages = 2;
+	const numPages = 1;
 	const numPerPage = 100;
-	const intervalWaitInSeconds = 10;
+	const intervalWaitInSeconds = 20;
 	const outputFileName = createOutputFileName(sortBy, numPages, numPerPage);
-	const attributesToKeep = ['name', 'forks', 'size', 'stargazers_count', 'description', 'url', 'full_url'];
+	const attributesToKeep = ['name', 'full_name', 'forks', 'size', 'stargazers_count', 'description', 'url'];
 
 	console.log(`Getting top ${numPages*numPerPage} Github Repositories sorted by ${sortBy}.
 		Estimated time to completion:  ${intervalWaitInSeconds*numPages/60} minutes.
@@ -93,5 +98,3 @@ function makeGetTopReposRequest(sortBy, page, numPerPage) {
 	
 	return gh.makeGithubRequest('GET', endpoint, queryString);
 }
-
-getTop();

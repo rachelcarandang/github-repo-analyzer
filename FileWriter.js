@@ -2,10 +2,12 @@
 
 const fs = require('fs');
 
-function writeJsonFileSync(fileName, data) {
+function writeJsonFileSync(fileName, jsonDataList) {
 	const filePath = fileName + '.json';
-	const jsonData = JSON.stringify(data, null, 2);
-	writeFileSync(filePath, jsonData);
+	jsonDataList.forEach((jsonBlob) => {
+		const data = JSON.stringify(jsonBlob, null, 2);
+		writeFileSync(filePath, data + '\n');
+	});
 }
 
 function writeFileSync(filePath, data) {

@@ -3,24 +3,29 @@
 const request = require('request');
 const AuthConfig = require('./AuthConfig');
 
+/**
+@param {string} method - required
+@param {string} endpoint - required
+@param {string} queryString - optional
+*/
 function makeGithubRequest(method, endpoint, queryString) {
-	const searchRequest = _createGitHubRequest(method, endpoint, queryString);
+	validateGithubRequestBeforeSending();
+	const fullEndpoint = createFullEndpointFromWhatIsSupplied(endpoint, queryString);
+	const searchRequest = _createGitHubRequest(method, fullEndpoint);
 	return new Promise((resolve, reject) => {
 		request(searchRequest, (err, response, body) => {
 			if (err) {
 				reject('Failed to send request to Github: ' + err);
 			} 
 			const responseBody = JSON.parse(body);
-
 			resolve(responseBody);
 		});
 	});
 }
 
-function _createGitHubRequest(method, endpoint, queryString) {
-	validateGithubRequestBeforeSending();
+function _createGitHubRequest(method, fullEndpoint) {
 	return {
-		uri: 'https://api.github.com' + endpoint + queryString,
+		uri: 'https://api.github.com' + fullEndpoint,
 		method,
 		headers: {
 			'Content-Type': 'application/json',
@@ -37,6 +42,13 @@ function validateGithubRequestBeforeSending() {
 			1. To generate a token, go to https://github.com/settings/tokens.
 			2. Paste the token in AuthConfig.js`);
 	}
+}
+
+function createFullEndpointFromWhatIsSupplied(endpoint, queryString) {
+	if (!queryString || queryString === '') {
+		return endpoint;
+	}
+	return endpoint + queryString;
 }
 
 module.exports = {
