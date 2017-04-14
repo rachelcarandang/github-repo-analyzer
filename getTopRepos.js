@@ -11,7 +11,7 @@ See https://developer.github.com/v3/search/ for more API options
 */
 function getTop() {
 	const sortBy = 'forks';
-	const numPages = 5;
+	const numPages = 2;
 	const numPerPage = 100;
 	const intervalWaitInSeconds = 10;
 	const outputFileName = createOutputFileName(sortBy, numPages, numPerPage);
@@ -26,9 +26,10 @@ function getTop() {
 }
 
 function createOutputFileName(sortBy, numPages, numPerPage) {
+	const outputDirectory = 'getTopResults';
 	const numReposRetrieved = numPages*numPerPage;
 	const dateInt = Date.now();
-	return `github_repos_top${numReposRetrieved}_${sortBy}_${dateInt}`;
+	return `${outputDirectory}/github_repos_top${numReposRetrieved}_${sortBy}_${dateInt}`;
 }
 
 function getTopReposAtIntervals(outputFileName, sortBy, numPages, 
