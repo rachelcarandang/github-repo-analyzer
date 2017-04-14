@@ -16,8 +16,8 @@ See https://developer.github.com/v3/search/ for more API options
 */
 function getTop() {
 	const sortBy = 'forks';
-	const sortOrder = 'desc';
-	const numPages = 2;
+	const sortOrder = 'asc';
+	const numPages = 10;
 	const numPerPage = 100;
 	const intervalWaitInSeconds = 10;
 	const outputFileName = createOutputFileName(sortBy, sortOrder, numPages, numPerPage);

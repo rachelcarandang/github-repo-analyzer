@@ -10,7 +10,6 @@ analyzeAllRepositories();
 
 function analyzeAllRepositories() {
 	const SOURCE_FILE_NAME = 'getTopResults/github_repos_top100_forks_1492156724692';
-	
 	console.log('Analyzing the READMEs of all repositories found in file: ' + SOURCE_FILE_NAME);
 	const lineReader = fio.getLineReaderForFile(SOURCE_FILE_NAME + '.json');
 	let numLines = 0;
@@ -23,28 +22,32 @@ function analyzeAllRepositories() {
 			const repositoryFullName = repo.full_name;
 			const repoSizeInKb = repo.size;
 			let num = numReposAnalyzed;
-			getReadmeStatsForRepository(repositoryFullName, (error, stats) => {
-				if (error) {
-					// console.log(`Error getting stats for README for repository: ${repo.url}. Skipping this repository.  Reason: ` + error);
-					numReposFailedToAnalyze++;
-					currLine++;
+			setTimeout(() => {
 
+				getReadmeStatsForRepository(repositoryFullName, (error, stats) => {
+					if (error) {
+						// console.log(`Error getting stats for README for repository: ${repo.url}. Skipping this repository.  Reason: ` + error);
+						numReposFailedToAnalyze++;
+						currLine++;
+
+						if (isEndOfFile(currLine, TOTAL_NUM_LINES)) {
+							computeStats(arr);
+						}
+						return;
+					}
+					numReposAnalyzed++; 
+					arr.push({
+						wordsInCodeInReadme: stats.numWordsInCode,
+						repoSizeInKb,
+					});
+					currLine++;
+					// last line of file, compute stats
 					if (isEndOfFile(currLine, TOTAL_NUM_LINES)) {
-						computeStats(arr);
-					}
-					return;
-				}
-				numReposAnalyzed++; 
-				arr.push({
-					wordsInCodeInReadme: stats.numWordsInCode,
-					repoSizeInKb,
+							computeStats(arr);
+						}
 				});
-				currLine++;
-				// last line of file, compute stats
-				if (isEndOfFile(currLine, TOTAL_NUM_LINES)) {
-						computeStats(arr);
-					}
-			});
+
+			}, 1000);
 		} catch (error) {
 			currLine++;
 			if (isEndOfFile(currLine, TOTAL_NUM_LINES)) {
@@ -52,6 +55,7 @@ function analyzeAllRepositories() {
 					}
 			console.log(`Error getting stats for README for repository: ${repo.url}. Could not read repository information from the results file: ${SOURCE_FILE_NAME}`);
 		}
+
 	}).on('close', () => {
 		TOTAL_NUM_LINES = numLines;
 	});
