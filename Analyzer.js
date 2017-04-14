@@ -10,8 +10,10 @@ let arr = [];
 /**
 Run analysis of READMEs of repositories
 */
-const sourceDataFileName = 'getTopResults/github_repos_top200_forks_asc_1492160963130';
+const sourceDataFileName = 'getTopResults/github_repos_top200_forks_desc_1492160876190';
 analyzeAllRepositories(sourceDataFileName);
+
+const repositoryNames = [];
 
 /**
 @ param {string} sourceDataFileName - the json file of repository items you want to analyze

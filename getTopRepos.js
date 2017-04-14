@@ -15,9 +15,9 @@ Script to get the Top Repositories sorted by:
 See https://developer.github.com/v3/search/ for more API options
 */
 function getTop() {
-	const sortBy = 'forks';
-	const sortOrder = 'asc';
-	const numPages = 2;
+	const sortBy = 'stars';
+	const sortOrder = 'desc';
+	const numPages = 10;
 	const numPerPage = 100;
 	const intervalWaitInSeconds = 10;
 	const outputFileName = createOutputFileName(sortBy, sortOrder, numPages, numPerPage);
@@ -38,6 +38,11 @@ function createOutputFileName(sortBy, sortOrder, numPages, numPerPage) {
 	return `${outputDirectory}/github_repos_top${numReposRetrieved}_${sortBy}_${sortOrder}_${dateInt}`;
 }
 
+/**
+GitHub has a rate limit:
+Authenticated - 30 requests per minute. 
+Unauthenticated - 10 requests per minute.  
+*/
 function getTopReposAtIntervals(outputFileName, sortBy, sortOrder, numPages, 
 	numPerPage, attributesToKeep, intervalWaitInSeconds, iterationsLeft) {
 	let secondsBetweenIntervals = intervalWaitInSeconds;

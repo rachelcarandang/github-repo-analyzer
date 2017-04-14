@@ -15,8 +15,10 @@ function makeGithubRequest(method, endpoint, queryString) {
 	return new Promise((resolve, reject) => {
 		request(searchRequest, (err, response, body) => {
 			if (err) {
+				console.log('Failed to send request to Github ' + err + ' ' + err.stack);
 				reject('Failed to send request to Github: ' + err);
 			} 
+			console.log('headers', response.headers);
 			const responseBody = JSON.parse(body);
 			resolve(responseBody);
 		});
