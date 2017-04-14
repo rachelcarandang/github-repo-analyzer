@@ -16,28 +16,29 @@ See https://developer.github.com/v3/search/ for more API options
 */
 function getTop() {
 	const sortBy = 'forks';
-	const numPages = 1;
+	const sortOrder = 'desc';
+	const numPages = 2;
 	const numPerPage = 100;
-	const intervalWaitInSeconds = 20;
-	const outputFileName = createOutputFileName(sortBy, numPages, numPerPage);
+	const intervalWaitInSeconds = 10;
+	const outputFileName = createOutputFileName(sortBy, sortOrder, numPages, numPerPage);
 	const attributesToKeep = ['name', 'full_name', 'forks', 'size', 'stargazers_count', 'description', 'url'];
 
 	console.log(`Getting top ${numPages*numPerPage} Github Repositories sorted by ${sortBy}.
 		Estimated time to completion:  ${intervalWaitInSeconds*numPages/60} minutes.
 		Output file can be found at: ${outputFileName}.json`);
 
-	getTopReposAtIntervals(outputFileName, sortBy, numPages, numPerPage, 
+	getTopReposAtIntervals(outputFileName, sortBy, sortOrder, numPages, numPerPage, 
 		attributesToKeep, intervalWaitInSeconds, numPages);
 }
 
-function createOutputFileName(sortBy, numPages, numPerPage) {
+function createOutputFileName(sortBy, sortOrder, numPages, numPerPage) {
 	const outputDirectory = 'getTopResults';
 	const numReposRetrieved = numPages*numPerPage;
 	const dateInt = Date.now();
-	return `${outputDirectory}/github_repos_top${numReposRetrieved}_${sortBy}_${dateInt}`;
+	return `${outputDirectory}/github_repos_top${numReposRetrieved}_${sortBy}_${sortOrder}_${dateInt}`;
 }
 
-function getTopReposAtIntervals(outputFileName, sortBy, numPages, 
+function getTopReposAtIntervals(outputFileName, sortBy, sortOrder, numPages, 
 	numPerPage, attributesToKeep, intervalWaitInSeconds, iterationsLeft) {
 	let secondsBetweenIntervals = intervalWaitInSeconds;
 	if (iterationsLeft === 0) {
@@ -47,8 +48,8 @@ function getTopReposAtIntervals(outputFileName, sortBy, numPages,
 	}
 	let page = numPages - iterationsLeft + 1;
 	setTimeout(() => {
-		getAndSaveTopReposForPage(outputFileName, sortBy, page, numPerPage, attributesToKeep);
-		getTopReposAtIntervals(outputFileName, sortBy, numPages, 
+		getAndSaveTopReposForPage(outputFileName, sortBy, sortOrder, page, numPerPage, attributesToKeep);
+		getTopReposAtIntervals(outputFileName, sortBy, sortOrder, numPages, 
 			numPerPage, attributesToKeep, intervalWaitInSeconds, iterationsLeft - 1)
 	}, secondsBetweenIntervals*1000);
 }
@@ -57,8 +58,8 @@ function isFirstIteration(iterationsLeft, totalNumPages) {
 	return iterationsLeft === totalNumPages;
 }
 
-function getAndSaveTopReposForPage(outputFileName, sortBy, page, numPerPage, attributesToKeep)  {
-	makeGetTopReposRequest(sortBy, page, numPerPage)
+function getAndSaveTopReposForPage(outputFileName, sortBy, sortOrder, page, numPerPage, attributesToKeep)  {
+	makeGetTopReposRequest(sortBy, sortOrder, page, numPerPage)
 		.then((jsonResponseBody) => {
 			const repoList = jsonResponseBody.items;
 			const cleanRepoList = filterRepoItemsToTheseAttributes(repoList, attributesToKeep);
@@ -91,10 +92,10 @@ function filterRepoItemsToTheseAttributes(repoList, attributesToKeep) {
 	return cleanRepos;
 }
 
-function makeGetTopReposRequest(sortBy, page, numPerPage) {
+function makeGetTopReposRequest(sortBy, sortOrder, page, numPerPage) {
 	console.log('Making Get Top Repos Request for page ' + page);
 	const endpoint = '/search/repositories';
-	const queryString = `?q=stars:">1"&sort=${sortBy}&order=desc&per_page=${numPerPage}&page=${page}`;
+	const queryString = `?q=stars:">1"&sort=${sortBy}&order=${sortOrder}&per_page=${numPerPage}&page=${page}`;
 	
 	return gh.makeGithubRequest('GET', endpoint, queryString);
 }
