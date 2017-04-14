@@ -1,0 +1,23 @@
+{
+  "name": "github-repo-analyzer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "getAuthToken.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rachelcarandang/github-repo-analyzer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rachelcarandang/github-repo-analyzer/issues"
+  },
+  "homepage": "https://github.com/rachelcarandang/github-repo-analyzer#readme",
+  "dependencies": {
+    "fs": "0.0.1-security",
+    "request": "^2.81.0"
+  }
+}
