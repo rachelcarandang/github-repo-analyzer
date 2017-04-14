@@ -10,10 +10,10 @@ let arr = [];
 /**
 Run analysis of READMEs of repositories
 */
-const sourceDataFileName = 'getTopResults/github_repos_top200_forks_desc_1492160876190';
+const sourceDataFileName = 
+	'getTopResults/github_repos_top1000_stars_asc_1492206481523';
 analyzeAllRepositories(sourceDataFileName);
 
-const repositoryNames = [];
 
 /**
 @ param {string} sourceDataFileName - the json file of repository items you want to analyze
@@ -27,8 +27,6 @@ function analyzeAllRepositories(sourceDataFileName) {
 	let TOTAL_NUM_LINES = 100;
 	lineReader.on('line', (line) => {
 		numLines++;
-		// Have no idea why, but this console.log statement fixes things. Should revert again. 
-		console.log(line);
 		try {
 			const repo = JSON.parse(line);
 			const repositoryFullName = repo.full_name;

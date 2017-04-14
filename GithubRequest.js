@@ -3,6 +3,33 @@
 const request = require('request');
 const AuthConfig = require('./AuthConfig');
 
+
+function makeRequest(method, endpoint) {
+	return new Promise((resolve, reject) => {
+		const requestData = {
+			method,
+			uri: endpoint,
+			headers: {
+					'Content-Type': 'application/json',
+				},
+		};
+		request(requestData, (err, response, body) => {
+				if (err) {
+					console.log('Failed to send request to Github ' + err + ' ' + err.stack);
+					reject('Failed to send request to Github: ' + err);
+					return;
+				}
+				// console.log('res', body);
+				try {
+
+					resolve(body);
+				} catch (error) {
+					reject('Failed to send request to Github: ' + err + ' ' + body);
+				}
+			});
+	});
+}
+
 /**
 @param {string} method - required
 @param {string} endpoint - required
@@ -18,7 +45,7 @@ function makeGithubRequest(method, endpoint, queryString) {
 				console.log('Failed to send request to Github ' + err + ' ' + err.stack);
 				reject('Failed to send request to Github: ' + err);
 			} 
-			console.log('headers', response.headers);
+			// console.log('headers', response.headers);
 			const responseBody = JSON.parse(body);
 			resolve(responseBody);
 		});
@@ -55,6 +82,7 @@ function createFullEndpointFromWhatIsSupplied(endpoint, queryString) {
 
 module.exports = {
 	makeGithubRequest,
+	makeRequest,
 }
 
 

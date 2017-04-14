@@ -2,20 +2,33 @@
 
 const gh = require('./GithubRequest');
 
+
+// getReadmeStatsForRepository('rachelcarandang/github-repo-analyzer', (err, stats) => {
+
+// 			console.log('stats', stats);
+// });
+
 /**
 @param {string} repositoryFullName, eg. 'rachelcarandang/github-repo-analyzer' 
 @param {callback(err, stats)}
 @return stats on the readme for the repository
 */
 function getReadmeStatsForRepository(repositoryFullName, callback) {
-	tryGetReadmeAsString(repositoryFullName)
+	// tryGetReadmeAsString(repositoryFullName)
+	tryGetReadmeAsStringNewEndpoint(repositoryFullName)
 		.then((readmeString) => {
+			// console.log('readme string', readmeString);
 			const stats = getReadmeStats(readmeString);
 			callback(null, stats);
 		})
 		.catch((error) => {
 			callback(new Error('Could not get stats for README for repository. Reason: ' + error.stack));
 		});	
+}
+
+function tryGetReadmeAsStringNewEndpoint(repositoryFullName) {
+	const endpoint = `https://raw.githubusercontent.com/${repositoryFullName}/master/README.md`;
+	return gh.makeRequest('GET', endpoint);
 }
 
 /**
