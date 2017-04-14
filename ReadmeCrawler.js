@@ -1,14 +1,91 @@
 'use strict';
 
 const gh = require('./GithubRequest');
+const fio = require('./FileIO');
+	let numReposAnalyzed = 0;
+	let numReposFailedToAnalyze = 0;
+	let arr = [];
 
-getReadmeStatsForRepository('rachelcarandang/github-repo-analyzer', (error, stats) => {
-	if (error) {
-		console.log('Error getting stats for README. Skipping this repository.  Reason: ' + error);
+analyzeAllRepositories();
+
+function analyzeAllRepositories() {
+	const SOURCE_FILE_NAME = 'getTopResults/github_repos_top100_forks_1492156724692';
+	
+	console.log('Analyzing the READMEs of all repositories found in file: ' + SOURCE_FILE_NAME);
+	const lineReader = fio.getLineReaderForFile(SOURCE_FILE_NAME + '.json');
+	let numLines = 0;
+	let currLine = 0;
+	let TOTAL_NUM_LINES = 100;
+	lineReader.on('line', (line) => {
+		numLines++;
+		try {
+			const repo = JSON.parse(line);
+			const repositoryFullName = repo.full_name;
+			const repoSizeInKb = repo.size;
+			let num = numReposAnalyzed;
+			getReadmeStatsForRepository(repositoryFullName, (error, stats) => {
+				if (error) {
+					// console.log(`Error getting stats for README for repository: ${repo.url}. Skipping this repository.  Reason: ` + error);
+					numReposFailedToAnalyze++;
+					currLine++;
+
+					if (isEndOfFile(currLine, TOTAL_NUM_LINES)) {
+						computeStats(arr);
+					}
+					return;
+				}
+				numReposAnalyzed++; 
+				arr.push({
+					wordsInCodeInReadme: stats.numWordsInCode,
+					repoSizeInKb,
+				});
+				currLine++;
+				// last line of file, compute stats
+				if (isEndOfFile(currLine, TOTAL_NUM_LINES)) {
+						computeStats(arr);
+					}
+			});
+		} catch (error) {
+			currLine++;
+			if (isEndOfFile(currLine, TOTAL_NUM_LINES)) {
+						computeStats(arr);
+					}
+			console.log(`Error getting stats for README for repository: ${repo.url}. Could not read repository information from the results file: ${SOURCE_FILE_NAME}`);
+		}
+	}).on('close', () => {
+		TOTAL_NUM_LINES = numLines;
+	});
+
+}
+
+function isEndOfFile(currLine, totalNumLines) {
+	return totalNumLines && (currLine === totalNumLines);
+}
+
+function computeStats(arr) {
+	if (arr.length === 0) {
+		throw new Error('length of statistics cannot be 0');
 	}
-	// do something with stats
-	console.log('stats', stats);
-});
+
+	// popular repositories had an average of code words per repository size
+	let average = 0;
+	let codeRate;
+	let absoluteWordsOfCode = 0;
+	arr.forEach((stat) => {
+		codeRate = stat.wordsInCodeInReadme/stat.repoSizeInKb;
+		average += codeRate;
+		absoluteWordsOfCode += stat.wordsInCodeInReadme;
+	});
+	const totalWithCodeInReadme = arr.length;
+	const codeRateAverage = average/arr.length;
+	const absoluteWordsOfCodeAverage = absoluteWordsOfCode/arr.length;
+	const analysis = {
+		totalWithCodeInReadme,
+		codeRateAverage,
+		absoluteWordsOfCodeAverage,
+	}
+	console.log('analysis ' + JSON.stringify(analysis, null, 2));
+}
 
 /**
 @param {string} repositoryFullName, eg. 'rachelcarandang/github-repo-analyzer' 

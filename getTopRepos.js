@@ -1,7 +1,7 @@
 'use strict';
 
 const gh = require('./GithubRequest');
-const fw = require('./FileWriter');
+const fio = require('./FileIO');
 
 /**
 Run main function
@@ -63,7 +63,7 @@ function getAndSaveTopReposForPage(outputFileName, sortBy, page, numPerPage, att
 			const repoList = jsonResponseBody.items;
 			const cleanRepoList = filterRepoItemsToTheseAttributes(repoList, attributesToKeep);
 			console.log('Writing Repos for page ' + page + ' to file');
-			fw.writeJsonFileSync(outputFileName, cleanRepoList);
+			fio.writeJsonFileSync(outputFileName, cleanRepoList);
 		})
 		.catch((err) => console.error('Error:', err.stack));
 }
