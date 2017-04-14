@@ -16,3 +16,8 @@ Modify these variables:
 ```
 
 Then run ```node getTopRepos``` to get the new list. 
+
+Once you have a file of data in ```/getTopResults/<results file>.json```,
+run an analysis on the data:
+
+```node Analyzer.js```

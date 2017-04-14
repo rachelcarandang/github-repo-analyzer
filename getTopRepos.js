@@ -16,7 +16,7 @@ See https://developer.github.com/v3/search/ for more API options
 */
 function getTop() {
 	const sortBy = 'forks';
-	const sortOrder = 'desc';
+	const sortOrder = 'asc';
 	const numPages = 2;
 	const numPerPage = 100;
 	const intervalWaitInSeconds = 10;
